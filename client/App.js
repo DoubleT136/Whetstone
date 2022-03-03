@@ -1,12 +1,9 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
  * @format
  * @flow strict-local
  */
 
-import React from 'react';
+import React, {useEffect, useRef} from 'react';
 import type {Node} from 'react';
 import {
   SafeAreaView,
@@ -16,6 +13,7 @@ import {
   Text,
   useColorScheme,
   View,
+  Button,
 } from 'react-native';
 
 import {
@@ -25,88 +23,57 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { ObjectList } from './modules/ObjectList.js';
+import RealmDB from './modules/RealmDB.js';
+import Realm from "realm";
+import uuid from 'react-native-uuid';
 
-const Section = ({children, title}): Node => {
-  const isDarkMode = useColorScheme() === 'dark';
+const SpriteList = [
+  {name: "Pikachu", image:"/src/pikachu.png"},
+  {name: "Victini", image:"/src/victini.png"}
+]
+
+const Stack = createNativeStackNavigator();
+const Homescreen = ({navigation}) => {
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-};
-
-const App: () => Node = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.js</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
+    <SafeAreaView>
+      <Button
+        title="List Objects"
+        onPress={() => navigation.navigate('ObjectList')}
+      />
     </SafeAreaView>
   );
-};
+}
 
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+const App = () => {
+  RealmDB.write(() => {
+    RealmDB.deleteAll();
+    RealmDB.create("Object", {
+      _id: uuid.v4(),
+      name: "Electricity",
+      sprite: "Pikachu",
+      desc: "R = V / I",
+      palace: "Science"
+    });
+    RealmDB.create("Object", {
+      _id: uuid.v4(),
+      name: "Fire",
+      sprite: "Victini",
+      desc: "fuel + oxygen —> carbon dioxide + water",
+      palace: "Science"
+    });
+  });
+  const isDarkMode = useColorScheme() === 'dark';
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Home" component={Homescreen} />
+        <Stack.Screen name="ObjectList" component={ObjectList} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
 
 export default App;
