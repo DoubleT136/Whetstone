@@ -116,6 +116,8 @@ import {StyleSheet} from 'react-native';
 import {
   ViroARScene,
   ViroText,
+  ViroNode,
+  ViroImage,
   ViroConstants,
   ViroARSceneNavigator,
 } from '@viro-community/react-viro';
@@ -134,12 +136,14 @@ const HelloWorldSceneAR = () => {
 
   return (
     <ViroARScene onTrackingUpdated={onInitialized}>
-      <ViroText
-        text={text}
-        scale={[0.5, 0.5, 0.5]}
-        position={[0, 0, -1]}
-        style={styles.helloWorldTextStyle}
-      />
+      <ViroNode position={[0, 0, -1]}>
+        <ViroImage
+          source={require('./assets/pikachu.png')}
+          scale={[0.5, 0.5, 0.5]}
+          position={[0, 0, -1]}
+          backgroundColor={'#FFFFFF80'}
+        />
+      </ViroNode>
     </ViroARScene>
   );
 };
