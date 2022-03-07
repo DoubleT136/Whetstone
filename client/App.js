@@ -3,77 +3,71 @@
  * @flow strict-local
  */
 
-import React, {useEffect, useRef} from 'react';
-import type {Node} from 'react';
+import React, { useState } from 'react';
 import {
   SafeAreaView,
-  ScrollView,
-  StatusBar,
   StyleSheet,
-  Text,
-  useColorScheme,
   View,
-  Button,
+  Pressable,
+  Text,
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ObjectList } from './modules/ObjectList.js';
+import { NewObject } from './modules/NewObject.js';
 import RealmDB from './modules/RealmDB.js';
-import Realm from "realm";
 import uuid from 'react-native-uuid';
-
-const SpriteList = [
-  {name: "Pikachu", image:"/src/pikachu.png"},
-  {name: "Victini", image:"/src/victini.png"}
-]
 
 const Stack = createNativeStackNavigator();
 const Homescreen = ({navigation}) => {
+  const [addModalVisible, setAddModalVisible] = useState(false);
   return (
-    <SafeAreaView>
-      <Button
-        title="List Objects"
+    <View style={{backgroundColor: 'white', flex: 1}}>
+      <Pressable
+        style={styles.button}
         onPress={() => navigation.navigate('ObjectList')}
-      />
-    </SafeAreaView>
+      >
+        <Text style={styles.textStyle}>List Objects</Text>
+      </Pressable>
+      <Pressable
+        style={styles.button}
+        onPress={() => setAddModalVisible(true)}
+      >
+        <NewObject modalVisible={addModalVisible} setModalVisible={setAddModalVisible} />
+        <Text style={styles.textStyle}>Add Object</Text>
+      </Pressable>
+    </View>
   );
 }
 
 const App = () => {
-  RealmDB.write(() => {
-    RealmDB.deleteAll();
-    RealmDB.create("Object", {
-      _id: uuid.v4(),
-      name: "Electricity",
-      sprite: "Pikachu",
-      desc: "R = V / I",
-      palace: "Science"
-    });
-    RealmDB.create("Object", {
-      _id: uuid.v4(),
-      name: "Fire",
-      sprite: "Victini",
-      desc: "fuel + oxygen —> carbon dioxide + water",
-      palace: "Science"
-    });
-  });
-  const isDarkMode = useColorScheme() === 'dark';
+  // RealmDB.write(() => {
+  //   RealmDB.deleteAll();
+  // });
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Home" component={Homescreen} />
-        <Stack.Screen name="ObjectList" component={ObjectList} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <SafeAreaView style={{flex: 1}}>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen name="Home" component={Homescreen} />
+          <Stack.Screen name="ObjectList" component={ObjectList} options={{ title: 'For Review' }}/>
+        </Stack.Navigator>
+      </NavigationContainer>
+    </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  button: {
+    padding: 10,
+    backgroundColor: "#777777",
+    alignSelf: "center",
+  },
+  textStyle: {
+    color: "white",
+    textAlign: "center"
+  },
+
+});
 
 export default App;

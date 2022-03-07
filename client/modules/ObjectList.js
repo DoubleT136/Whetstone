@@ -1,46 +1,35 @@
-/**
- * @format
- * @flow strict-local
- */
-
-import React from 'react';
-import type {Node} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   SafeAreaView,
   ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
-  useColorScheme,
   View,
-  Button,
   Image,
+  Pressable,
+  useWindowDimensions,
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import RealmDB from './RealmDB.js'
-
-// done this way because require only accepts a literal string
-const images = {
-  'Pikachu': require('../src/Pikachu.png'),
-  'Victini': require('../src/Victini.png')
-};
+import {DetailView} from './DetailView.js'
+import {twodimages} from './twodimages.js'
 
 export const ObjectList = ({navigation}) => {
+  [value, setValue] = useState(0);
+  function forceUpdate() {
+    setValue(value => value + 1);
+  }
+  // IMPORTANT: setValue triggers a rerender so the list can be updated. There's probably a better way to do this.
+  useEffect(() => {
+    RealmDB.addListener('change', forceUpdate);
+    return (() => {RealmDB.removeListener('change', forceUpdate)})
+  }, []);
   return (
     <SafeAreaView>
       <ScrollView contentInsetAdjustmentBehavior="automatic">
         <View
           style={{
-            backgroundColor: Colors.white,
+            backgroundColor: "white",
           }}>
           {
             RealmDB.objects("Object").map((obj) => {
@@ -53,33 +42,37 @@ export const ObjectList = ({navigation}) => {
   );
 }
 
-const ObjectListItem = (object) => {
-  object = object.object;
-  img = '../src/' + object.sprite + '.png';
+const ObjectListItem = ({object}) => {
+  const [modalVisible, setModalVisible] = useState(false);
   return (
-    <View>
-      <Text>{object.name}</Text>
-      <Text>{object.desc}</Text>
-      <Image source={images[object.sprite]} style={{width: 50, height: 50}} />
+    <View style={{flexDirection: 'row', height: useWindowDimensions().height / 10, paddingTop: "2%", paddingBottom: "2%", borderBottomColor: "black", borderBottomWidth: 1}}>
+      <DetailView object={object} modalVisible={modalVisible} setModalVisible={setModalVisible} />
+      {object == undefined ? null :
+        <Image source={twodimages[object.sprite]} style={{flex: 1, height: '100%', resizeMode: 'contain'}} />
+      }
+      <Text style={{flex: 2, alignSelf: "center", marginLeft: "5%", fontSize: 16}}>{object.name}</Text>
+      <Pressable
+        style={styles.button}
+        onPress={() => setModalVisible(true)}
+      >
+        <Text style={styles.textStyle}>View</Text>
+      </Pressable>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  button: {
+    padding: 10,
+    backgroundColor: "#777777",
+    marginLeft: "auto",
+    marginRight: "5%",
+    height: "50%",
+    alignSelf: "center",
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+  textStyle: {
+    color: "white",
+    textAlign: "center"
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
+
 });
