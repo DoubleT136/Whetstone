@@ -10,32 +10,74 @@ import {
   View,
   Pressable,
   Text,
+  Modal
 } from 'react-native';
 
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ObjectList } from './modules/ObjectList.js';
 import { NewObject } from './modules/NewObject.js';
+import { TestingView } from './modules/TestingView.js';
+
 import RealmDB from './modules/RealmDB.js';
 import uuid from 'react-native-uuid';
 
-const Stack = createNativeStackNavigator();
-const Homescreen = ({navigation}) => {
-  const [addModalVisible, setAddModalVisible] = useState(false);
+const Homescreen = () => {
+  [addModalVisible, setAddModalVisible] = useState(false);
+  [testModalVisible, setTestModalVisible] = useState(false);
+  [reviewModalVisible, setReviewModalVisible] = useState(false);
+  [objectToTest, setObjectToTest] = useState(undefined);
+  [reviewList, setReviewList] = useState([]);
+  [listModalVisible, setListModalVisible] = useState(false);
   return (
     <View style={{backgroundColor: 'white', flex: 1}}>
       <Pressable
         style={styles.button}
-        onPress={() => navigation.navigate('ObjectList')}
+        onPress={() => setListModalVisible(true)}
       >
+        <ObjectList reviewMode={false} reviewList={[]} modalVisible={listModalVisible} setModalVisible={setListModalVisible}/>
         <Text style={styles.textStyle}>List Objects</Text>
       </Pressable>
+
       <Pressable
         style={styles.button}
         onPress={() => setAddModalVisible(true)}
       >
         <NewObject modalVisible={addModalVisible} setModalVisible={setAddModalVisible} />
         <Text style={styles.textStyle}>Add Object</Text>
+      </Pressable>
+
+      <Pressable
+        style={styles.button}
+        onPress={() => {
+          setObjectToTest(RealmDB.objects("Object")[0])
+          setTestModalVisible(true);
+        }}
+      >
+        <TestingView object={objectToTest} modalVisible={testModalVisible} setModalVisible={setTestModalVisible} addToReviewList={() => {
+          if (!reviewList.includes(objectToTest._id))
+          {
+            setReviewList(reviewList.concat([objectToTest._id]));
+          }}} />
+        <Text style={styles.textStyle}>Example to test</Text>
+      </Pressable>
+
+      <Pressable
+        style={styles.button}
+        onPress={() => {
+          setReviewModalVisible(true);
+        }}
+      >
+        <ObjectList reviewMode={true} reviewList={reviewList} modalVisible={reviewModalVisible} setModalVisible={setReviewModalVisible}/>
+        <Text style={styles.textStyle}>Objects Marked For Review</Text>
+      </Pressable>
+
+
+      <Pressable
+        style={styles.button}
+        onPress={() => {
+          setReviewList([]);
+        }}
+      >
+        <Text style={styles.textStyle}>End Test</Text>
       </Pressable>
     </View>
   );
@@ -47,12 +89,7 @@ const App = () => {
   // });
   return (
     <SafeAreaView style={{flex: 1}}>
-      <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Screen name="Home" component={Homescreen} />
-          <Stack.Screen name="ObjectList" component={ObjectList} options={{ title: 'For Review' }}/>
-        </Stack.Navigator>
-      </NavigationContainer>
+      <Homescreen />
     </SafeAreaView>
   );
 }
@@ -67,7 +104,6 @@ const styles = StyleSheet.create({
     color: "white",
     textAlign: "center"
   },
-
 });
 
 export default App;
