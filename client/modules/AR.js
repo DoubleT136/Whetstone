@@ -7,10 +7,15 @@ import {
   ViroImage,
   ViroConstants,
   ViroARSceneNavigator,
+  ViroARPlaneSelector,
 } from '@viro-community/react-viro';
 
 const HelloWorldSceneAR = () => {
   const [text, setText] = useState('Initializing AR...');
+
+  const images = {
+    Pikachu: require('../src/Pikachu.png'),
+  };
 
   function onInitialized(state, reason) {
     console.log('guncelleme', state, reason);
@@ -23,9 +28,10 @@ const HelloWorldSceneAR = () => {
 
   return (
     <ViroARScene onTrackingUpdated={onInitialized}>
+      {/* <ViroARPlaneSelector /> */}
       <ViroNode position={[0, 0, -1]}>
         <ViroImage
-          source={require('./assets/pikachu.png')}
+          source={images['Pikachu']}
           scale={[0.5, 0.5, 0.5]}
           position={[0, 0, -1]}
           backgroundColor={'#FFFFFF80'}
@@ -49,11 +55,4 @@ export default () => {
 
 var styles = StyleSheet.create({
   f1: {flex: 1},
-  helloWorldTextStyle: {
-    fontFamily: 'Arial',
-    fontSize: 30,
-    color: '#ffffff',
-    textAlignVertical: 'center',
-    textAlign: 'center',
-  },
 });

@@ -26,6 +26,7 @@ import {
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ObjectList } from './modules/ObjectList.js';
+import { AR } from './modules/AR.js';
 import RealmDB from './modules/RealmDB.js';
 import Realm from "realm";
 import uuid from 'react-native-uuid';
@@ -42,6 +43,10 @@ const Homescreen = ({navigation}) => {
       <Button
         title="List Objects"
         onPress={() => navigation.navigate('ObjectList')}
+      />
+      <Button
+        title="AR View"
+        onPress={() => navigation.navigate('AR')}
       />
     </SafeAreaView>
   );
@@ -71,6 +76,7 @@ const App = () => {
       <Stack.Navigator>
         <Stack.Screen name="Home" component={Homescreen} />
         <Stack.Screen name="ObjectList" component={ObjectList} />
+        <Stack.Screen name="AR" component={AR} />
       </Stack.Navigator>
     </NavigationContainer>
   );
