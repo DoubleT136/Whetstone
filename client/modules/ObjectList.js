@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -16,10 +16,7 @@ import {DetailView} from './DetailView.js'
 import {twodimages} from './twodimages.js'
 
 export const ObjectList = ({reviewMode, reviewList, modalVisible, setModalVisible}) => {
-  [value, setValue] = useState(0);
-  function forceUpdate() {
-    setValue(value => value + 1);
-  }
+  const [_, forceUpdate] = useReducer((x) => x + 1, 0);
   // IMPORTANT: setValue triggers a rerender so the list can be updated. There's probably a better way to do this.
   useEffect(() => {
     RealmDB.addListener('change', forceUpdate);
@@ -57,7 +54,7 @@ export const ObjectList = ({reviewMode, reviewList, modalVisible, setModalVisibl
                 {
                   RealmDB.objects("Object").map((obj) => {
                     if (!reviewMode || (reviewMode && reviewList.includes(obj._id)))
-                      return <ObjectListItem key={obj._id} object={obj} />;
+                      return <ObjectListItem key={obj._id} objid={obj._id} />;
                   })
                 }
                 <Text style={{marginTop: '5%', textAlign: 'center'}}>{reviewMode && reviewList.length == 0 && 'You haven\'t marked anything for review yet!'}</Text>
@@ -70,15 +67,16 @@ export const ObjectList = ({reviewMode, reviewList, modalVisible, setModalVisibl
   );
 }
 
-const ObjectListItem = ({object}) => {
+const ObjectListItem = ({objid}) => {
+  object = RealmDB.objectForPrimaryKey("Object", objid);
   const [modalVisible, setModalVisible] = useState(false);
   return (
     <View style={{flexDirection: 'row', height: useWindowDimensions().height / 10, paddingTop: "2%", paddingBottom: "2%", borderBottomColor: "black", borderBottomWidth: 1}}>
-      <DetailView object={object} modalVisible={modalVisible} setModalVisible={setModalVisible} />
+      {object != undefined && <DetailView object={object} modalVisible={modalVisible} setModalVisible={setModalVisible} />}
       {object == undefined ? null :
         <Image source={twodimages[object.sprite]} style={{flex: 1, height: '100%', resizeMode: 'contain'}} />
       }
-      <Text style={{flex: 2, alignSelf: "center", marginLeft: "5%", fontSize: 16}}>{object.name}</Text>
+      {object != undefined && <Text style={{flex: 2, alignSelf: "center", marginLeft: "5%", fontSize: 16}}>{object.name}</Text>}
       <Pressable
         style={styles.button}
         onPress={() => setModalVisible(true)}

@@ -21,12 +21,12 @@ import RealmDB from './modules/RealmDB.js';
 import uuid from 'react-native-uuid';
 
 const Homescreen = () => {
-  [addModalVisible, setAddModalVisible] = useState(false);
-  [testModalVisible, setTestModalVisible] = useState(false);
-  [reviewModalVisible, setReviewModalVisible] = useState(false);
-  [objectToTest, setObjectToTest] = useState(undefined);
-  [reviewList, setReviewList] = useState([]);
-  [listModalVisible, setListModalVisible] = useState(false);
+  const [addModalVisible, setAddModalVisible] = useState(false);
+  const [testModalVisible, setTestModalVisible] = useState(false);
+  const [reviewModalVisible, setReviewModalVisible] = useState(false);
+  const [objectToTest, setObjectToTest] = useState(undefined);
+  const [reviewList, setReviewList] = useState([]);
+  const [listModalVisible, setListModalVisible] = useState(false);
   return (
     <View style={{backgroundColor: 'white', flex: 1}}>
       <Pressable

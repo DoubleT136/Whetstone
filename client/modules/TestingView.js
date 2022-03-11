@@ -5,7 +5,7 @@ import RealmDB from './RealmDB.js'
 
 export const TestingView = ({object, modalVisible, setModalVisible, addToReviewList}) => {
   if(object == undefined) {return null;}
-  [showAnswer, setShowAnswer] = useState(false);
+  const [showAnswer, setShowAnswer] = useState(false);
 
   return (
     <Modal

@@ -84,10 +84,10 @@ export const DetailView = ({object, modalVisible, setModalVisible}) => {
             <Pressable
               style={{backgroundColor: "#F2A606", height: "10%", justifyContent: "center", alignItems: "center"}}
               onPress={() => {
+                setModalVisible(!modalVisible);
                 RealmDB.write(() => {
                   RealmDB.delete(object);
                 });
-                setModalVisible(!modalVisible);
               }}>
               <Text style={{color: "white", fontWeight: "bold", fontSize: 20}}>Delete Object</Text>
             </Pressable>
