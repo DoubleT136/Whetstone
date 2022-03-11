@@ -3,83 +3,108 @@
  * @flow strict-local
  */
 
-import React, {useEffect, useRef} from 'react';
-import type {Node} from 'react';
+import React, { useState } from 'react';
 import {
   SafeAreaView,
-  ScrollView,
-  StatusBar,
   StyleSheet,
-  Text,
-  useColorScheme,
   View,
-  Button,
+  Pressable,
+  Text,
+  Modal
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ObjectList } from './modules/ObjectList.js';
 import { AR } from './modules/AR.js';
+import { NewObject } from './modules/NewObject.js';
+import { TestingView } from './modules/TestingView.js';
+
 import RealmDB from './modules/RealmDB.js';
-import Realm from "realm";
 import uuid from 'react-native-uuid';
 
-const SpriteList = [
-  {name: "Pikachu", image:"/src/pikachu.png"},
-  {name: "Victini", image:"/src/victini.png"}
-]
-
-const Stack = createNativeStackNavigator();
-const Homescreen = ({navigation}) => {
+const Homescreen = () => {
+  const [addModalVisible, setAddModalVisible] = useState(false);
+  const [testModalVisible, setTestModalVisible] = useState(false);
+  const [reviewModalVisible, setReviewModalVisible] = useState(false);
+  const [objectToTest, setObjectToTest] = useState(undefined);
+  const [reviewList, setReviewList] = useState([]);
+  const [listModalVisible, setListModalVisible] = useState(false);
   return (
-    <SafeAreaView>
-      <Button
-        title="List Objects"
-        onPress={() => navigation.navigate('ObjectList')}
-      />
-      <Button
-        title="AR View"
-        onPress={() => navigation.navigate('AR')}
-      />
-    </SafeAreaView>
+    <View style={{backgroundColor: 'white', flex: 1}}>
+      <Pressable
+        style={styles.button}
+        onPress={() => setListModalVisible(true)}
+      >
+        <ObjectList reviewMode={false} reviewList={[]} modalVisible={listModalVisible} setModalVisible={setListModalVisible}/>
+        <Text style={styles.textStyle}>List Objects</Text>
+      </Pressable>
+
+      <Pressable
+        style={styles.button}
+        onPress={() => setAddModalVisible(true)}
+      >
+        <NewObject modalVisible={addModalVisible} setModalVisible={setAddModalVisible} />
+        <Text style={styles.textStyle}>Add Object</Text>
+      </Pressable>
+
+      <Pressable
+        style={styles.button}
+        onPress={() => {
+          setObjectToTest(RealmDB.objects("Object")[0])
+          setTestModalVisible(true);
+        }}
+      >
+        <TestingView object={objectToTest} modalVisible={testModalVisible} setModalVisible={setTestModalVisible} addToReviewList={() => {
+          if (!reviewList.includes(objectToTest._id))
+          {
+            setReviewList(reviewList.concat([objectToTest._id]));
+          }}} />
+        <Text style={styles.textStyle}>Example to test</Text>
+      </Pressable>
+
+      <Pressable
+        style={styles.button}
+        onPress={() => {
+          setReviewModalVisible(true);
+        }}
+      >
+        <ObjectList reviewMode={true} reviewList={reviewList} modalVisible={reviewModalVisible} setModalVisible={setReviewModalVisible}/>
+        <Text style={styles.textStyle}>Objects Marked For Review</Text>
+      </Pressable>
+
+
+      <Pressable
+        style={styles.button}
+        onPress={() => {
+          setReviewList([]);
+        }}
+      >
+        <Text style={styles.textStyle}>End Test</Text>
+      </Pressable>
+    </View>
   );
 }
 
 const App = () => {
-  RealmDB.write(() => {
-    RealmDB.deleteAll();
-    RealmDB.create("Object", {
-      _id: uuid.v4(),
-      name: "Electricity",
-      sprite: "Pikachu",
-      desc: "R = V / I",
-      palace: "Science"
-    });
-    RealmDB.create("Object", {
-      _id: uuid.v4(),
-      name: "Fire",
-      sprite: "Victini",
-      desc: "fuel + oxygen —> carbon dioxide + water",
-      palace: "Science"
-    });
-  });
-  const isDarkMode = useColorScheme() === 'dark';
+  // RealmDB.write(() => {
+  //   RealmDB.deleteAll();
+  // });
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Home" component={Homescreen} />
-        <Stack.Screen name="ObjectList" component={ObjectList} />
-        <Stack.Screen name="AR" component={AR} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <SafeAreaView style={{flex: 1}}>
+      <Homescreen />
+    </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  button: {
+    padding: 10,
+    backgroundColor: "#777777",
+    alignSelf: "center",
+  },
+  textStyle: {
+    color: "white",
+    textAlign: "center"
+  },
+});
 
 export default App;
