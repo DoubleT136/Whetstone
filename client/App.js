@@ -14,7 +14,6 @@ import {
 } from 'react-native';
 
 import { ObjectList } from './modules/ObjectList.js';
-import { AR } from './modules/AR.js';
 import { NewObject } from './modules/NewObject.js';
 import { TestingView } from './modules/TestingView.js';
 
