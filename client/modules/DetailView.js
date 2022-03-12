@@ -3,12 +3,64 @@ import { Modal, StyleSheet, Text, Pressable, View, Image, ScrollView, TextInput 
 import {twodimages} from './twodimages.js'
 import RealmDB from './RealmDB.js'
 
+const DeleteConfirmation = ({object, modalVisible, setModalVisible, setParentModalVisible}) => {
+  return (
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={modalVisible}
+      onDismiss={() => {
+        setModalVisible(false);
+      }}
+      onRequestClose={() => {
+        setModalVisible(false);
+      }}
+    >
+      <View style={styles.container}>
+        <View style={[styles.modalView,{height: '30%', width: '60%'}]}>
+          <View style={styles.modalHeader}>
+            <Pressable
+              style={[styles.button]}
+              onPress={() => setModalVisible(false)}>
+              <Text style={{color: "white"}}>X</Text>
+            </Pressable>
+            <View style={styles.modalHeaderContent}>
+              <Text style={{flex: 2, flexShrink: 1, textAlign: "center", color: "#F2A606", fontWeight: 'bold', fontSize: 20}}>{object.name}</Text>
+              <Image source={twodimages[object.sprite]} style={{flex: 1, width: '100%', height: '100%', resizeMode: 'contain'}} />
+            </View>
+          </View>
+          <ScrollView contentInsetAdjustmentBehavior="automatic" style={{padding: 20}}>
+            <TextInput
+              value='Are you sure you want to delete this object permanently?'
+              multiline={true}
+              editable={false}
+              style={{borderColor: "black", borderWidth: 0, padding: 10, textAlign: 'left'}}
+            />
+          </ScrollView>
+          <Pressable
+            style={{backgroundColor: "#F2A606", height: "10%", justifyContent: "center", alignItems: "center"}}
+            onPress={() => {
+              setModalVisible(false);
+              setParentModalVisible(false);
+              RealmDB.write(() => {
+                RealmDB.delete(object);
+              });
+            }}>
+            <Text style={{color: "white", fontWeight: "bold", fontSize: 20}}>Confirm</Text>
+          </Pressable>
+        </View>
+      </View>
+    </Modal>
+  )
+}
+
 export const DetailView = ({object, modalVisible, setModalVisible}) => {
   // if(object == undefined) {return null;}
   const [isInEdit, setInEdit] = useState(false);
   const [text, onChangeText] = useState(object.desc);
   const [name, onChangeName] = useState(object.name);
   const [nameError, onNameError] = useState(false);
+  const [isDeleteConfirmation, setDeleteConfirmation] = useState(false);
   return (
     <Modal
       animationType="slide"
@@ -81,16 +133,16 @@ export const DetailView = ({object, modalVisible, setModalVisible}) => {
             />
           </ScrollView>
           {isInEdit &&
-            <Pressable
-              style={{backgroundColor: "#F2A606", height: "10%", justifyContent: "center", alignItems: "center"}}
-              onPress={() => {
-                setModalVisible(!modalVisible);
-                RealmDB.write(() => {
-                  RealmDB.delete(object);
-                });
-              }}>
-              <Text style={{color: "white", fontWeight: "bold", fontSize: 20}}>Delete Object</Text>
-            </Pressable>
+            <>
+              <DeleteConfirmation object={object} modalVisible={isDeleteConfirmation} setModalVisible={setDeleteConfirmation} setParentModalVisible={setModalVisible} />
+              <Pressable
+                style={{backgroundColor: "#F2A606", height: "10%", justifyContent: "center", alignItems: "center"}}
+                onPress={() => {
+                  setDeleteConfirmation(true);
+                }}>
+                <Text style={{color: "white", fontWeight: "bold", fontSize: 20}}>Delete Object</Text>
+              </Pressable>
+            </>
           }
         </View>
       </View>
