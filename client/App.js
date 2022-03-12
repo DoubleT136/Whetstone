@@ -10,7 +10,8 @@ import {
   View,
   Pressable,
   Text,
-  Modal
+  Modal,
+  Image
 } from 'react-native';
 
 import { ObjectList } from './modules/ObjectList.js';
@@ -83,13 +84,37 @@ const Homescreen = () => {
   );
 }
 
+const Tutorial = ({setState}) => {
+  return (
+    <>
+      <Image source={require('./src/Logo.png')} style={{flex: 1, width: '100%', resizeMode: 'contain', marginTop: '10%'}} />
+      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+        <Text style={{textAlign: "center", color: "#F2A606", fontWeight: 'bold', fontSize: 30}}>What is a mind palace?</Text>
+      </View>
+      <View style={{flex: 2, alignItems: 'center', marginLeft: '10%', marginRight: '10%'}}>
+        <Text style={{fontSize: 20}}>Mind palace is a strategy of memory enhancement which uses visualizations of familiar spatial environments in order to enhance the recall of information.</Text>
+      </View>
+      <View style={{flex: 1}}>
+        <Pressable
+          style={styles.button}
+          onPress={() => setState('app')}
+        >
+          <Text style={styles.textStyle}>Try it now!</Text>
+        </Pressable>
+      </View>
+    </>
+  );
+}
+
 const App = () => {
   // RealmDB.write(() => {
   //   RealmDB.deleteAll();
   // });
+  const [state, setState] = useState('tutorial');
   return (
     <SafeAreaView style={{flex: 1}}>
-      <Homescreen />
+      {state == 'tutorial' && <Tutorial setState={setState}/>}
+      {state == 'app' && <Homescreen />}
     </SafeAreaView>
   );
 }
