@@ -1,6 +1,11 @@
 # Whetstone
 World's first mobile AR mind palace app.
 
+#TestFlight Build Installation Instructions - iOS:
+1. Download TestFlight from the iOS App Store - https://apps.apple.com/ie/app/testflight/id899247664
+2. Visit https://testflight.apple.com/join/WQae7CN7 on your phone, log into your Apple ID, and accept the invitation to test the app.
+3. TestFlight should install the app and allow you to run it on your phone
+
 #React Native Practices
 
 *Project uses yarn, so whenever you're executing react-native terminal commands within the 'client' folder, make sure you preface your instruction with 'yarn' rather than 'npm' or 'npx' - eg. 'yarn react-native run-ios'
